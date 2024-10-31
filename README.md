@@ -1,1 +1,1 @@
-# NuGet tips & tricks
+# NuGet Tips & Tricks
