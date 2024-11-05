@@ -106,7 +106,24 @@ To be able to utilize debugging in this way in Visual Studio, you also need to d
 
 > NOTE: In normal cases it is recommended to have this option **enabled** for the optimal developer experience. So when you are done debugging the remote package, you should re-enable this option
 
-## Building a new NuGet package using the version from the `<VersionPrefix>` property (in Azure DevOps)
+## Building a new NuGet package using the version from the `<VersionPrefix>` property (in an Azure DevOps pipeline)
 
-1. 
+1. Add a task to the pipeline call the `Determine-Version` script, this will update the build number based on the contents of the <VersionPrefix> and what branch is being built:
+
+```yml
+  ############################
+  #### SET VERSION
+  ############################
+
+  - task: PowerShell@2
+    displayName: "Determine and set version"
+    inputs:
+      pwsh: true
+      filePath: "Infrastructure/nuget/scripts/Determine-Version.ps1"
+      arguments: >
+        -projectFile ${{ parameters.projectName }}/src/${{ parameters.projectName }}/${{ parameters.projectName }}.csproj
+        -versionSuffix $(Build.BuildNumber)
+        -buildSourceBranch $(Build.SourceBranch)
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+```
 
