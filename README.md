@@ -28,7 +28,7 @@
 [...]
 ```
 
-### Add build step to `.csproj` file to push package to local feed when building project in "Debug" mode
+### Add build step to `.csproj` file to push package to local feed when building project with the "Debug" configuration
 ```xml
   <Target Name="PushToLocalFeed" AfterTargets="Pack" Condition=" '$(Configuration)' == 'Debug' ">
     <!-- Get path to the produced NuGet package files -->
