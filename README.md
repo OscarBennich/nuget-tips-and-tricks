@@ -105,3 +105,8 @@ To be able to utilize debugging in this way in Visual Studio, you also need to d
 - Disable the "Enable Just My Code" option > Click OK
 
 > NOTE: In normal cases it is recommended to have this option **enabled** for the optimal developer experience. So when you are done debugging the remote package, you should re-enable this option
+
+## Building a new NuGet package using the version from the `<VersionPrefix>` property (in Azure DevOps)
+
+1. 
+
