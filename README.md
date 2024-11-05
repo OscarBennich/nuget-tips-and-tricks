@@ -121,9 +121,45 @@ To be able to utilize debugging in this way in Visual Studio, you also need to d
       pwsh: true
       filePath: "Infrastructure/nuget/scripts/Determine-Version.ps1"
       arguments: >
-        -projectFile ${{ parameters.projectName }}/src/${{ parameters.projectName }}/${{ parameters.projectName }}.csproj
+        -projectFile path/to/projectfile/project.csproj
         -versionSuffix $(Build.BuildNumber)
         -buildSourceBranch $(Build.SourceBranch)
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 ```
 
+2. Utilize the `byEnvVar` versioning scheme when running dotnet pack to use the build number we set in step 1:
+
+```yml
+  ############################
+  #### CREATE PACKAGE
+  ############################
+
+  - task: DotNetCoreCLI@2
+    displayName: "📦 dotnet pack"
+    inputs:
+      command: "pack"
+      packagesToPack: "**/*.csproj"
+      configuration: "Release"
+      outputDir: "$(Build.ArtifactStagingDirectory)/"
+      versioningScheme: byEnvVar
+      versionEnvVar: BUILD_BUILDNUMBER
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+```
+
+3. Push the created package to the Azure DevOps feed:
+
+```yml
+
+  #################################
+  #### PUSH PACKAGE TO AZURE FEED
+  #################################
+
+  - task: DotNetCoreCLI@2
+    displayName: "🚀 dotnet push"
+    inputs:
+      command: "push"
+      packagesToPush: "$(Build.ArtifactStagingDirectory)/*.nupkg"
+      nuGetFeedType: "internal"
+      publishVstsFeed: "{{PRIVATE ORG FEED}}"
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+``` 
