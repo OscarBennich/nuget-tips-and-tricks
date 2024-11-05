@@ -2,8 +2,10 @@
 
 ## Using a local NuGet feed
 
+- A "local feed" is just a folder on your computer where we store packages that have been built locally and point to from other solutions (e.g. C:\Users\MYUSER\some\local\folder\nuget)
+
 ### Add required properties to `.csproj` file
-```cs
+```xml
 [...]
 
   <PropertyGroup>
@@ -18,14 +20,16 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <DebugType>embedded</DebugType>
-    <VersionSuffix>local</VersionSuffix> <!-- Local packages will be suffixed with "-local" (e.g. MyPackage.1.0.0-local) -->
+
+    <!-- Local packages will be suffixed with "-local" (e.g. MyPackage.1.0.0-local) -->
+    <VersionSuffix>local</VersionSuffix>
   </PropertyGroup>
 
 [...]
 ```
 
 ### Add build step to `.csproj` file to push package to local feed when building project in "Debug" mode
-```cs
+```xml
   <Target Name="PushToLocalFeed" AfterTargets="Pack" Condition=" '$(Configuration)' == 'Debug' ">
     <!-- Get path to the produced NuGet package files -->
     <PropertyGroup>
@@ -44,5 +48,20 @@
     <!-- Push NuGet package to local feed -->
     <Exec Command="dotnet nuget push $(PackagePath).nupkg --source $(LocalFeed)" />
   </Target>
+```
+
+### Add the local NuGet feed to the consuming solution
+
+- In the `nuget.config` file in the repo, add this:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="Local" value="%USERPROFILE%\\some\local\folder\nuget" />
+	  [...]
+  </packageSources>
+</configuration>
 ```
 
