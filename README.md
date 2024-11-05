@@ -84,7 +84,7 @@
     displayName: "Determine and set version"
     inputs:
       pwsh: true
-      filePath: "Infrastructure/nuget/scripts/Determine-Version.ps1"
+      filePath: "scripts/Determine-Version.ps1"
       arguments: >
         -projectFile path/to/projectfile/project.csproj
         -versionSuffix $(Build.BuildNumber)
